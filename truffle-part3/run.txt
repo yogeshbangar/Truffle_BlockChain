@@ -1,0 +1,7 @@
+truffle develop
+compile
+migrate --reset
+let instance = await HelloWorld.deployed()
+test
+instance.getName()
+instance.setName("yogesh")
