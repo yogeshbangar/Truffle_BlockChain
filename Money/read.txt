@@ -1,7 +1,8 @@
+truffle unbox pet-shop
 truffle compile
 truffle migrate --reset
 truffle console
-Election.deployed().then(function (i){apps = i});
+Money.deployed().then(function (i){apps = i});
 apps.candidates(1).then(function(can){cone = can;});
 cone[0].toNumber();
 apps.candidateConut()

@@ -20,14 +20,21 @@ contract Election {
     addCandidate("Candidate 2");
   }
   function addCandidate(string memory _name) private {
-    candidates[candidateConut] = Candidate(candidateConut + 1,_name,0);
+    candidates[candidateConut] = Candidate(candidateConut+1,_name,0);
     candidateConut++;
   }
   function vote(uint _candidateId) public {
     require(!voters[msg.sender]);
-    require(_candidateId >= 0 && _candidateId < candidateConut);
+    require(_candidateId > 0 && _candidateId <= candidateConut);
     voters[msg.sender] = true;
-    candidates[_candidateId].vateCount ++;
+    candidates[_candidateId-1].vateCount ++;
     emit votedEvent(_candidateId);
+  }
+  function great() public {
+    // require(!voters[msg.sender]);
+    // require(_candidateId >= 0 && _candidateId < candidateConut);
+    // voters[msg.sender] = true;
+    //candidates[_candidateId].vateCount ++;
+    // emit votedEvent(_candidateId);
   }
 }

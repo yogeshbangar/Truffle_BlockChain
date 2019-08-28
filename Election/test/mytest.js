@@ -27,7 +27,7 @@ contract('Election',function(accounts){
   it('allow voter to cast vote',function(){
       return Election.deployed().then(function(instacnce){
         ins = instacnce;
-        candidateId = 0;
+        candidateId = 1;
         return ins.vote(candidateId,{from : accounts[0]});
       }).then(function(reciept){
         assert.equal(reciept.logs.length,1,'an event was triggered');
@@ -36,7 +36,7 @@ contract('Election',function(accounts){
         return ins.voters(accounts[0]);
       }).then(function(voted){
         assert(voted," the voter mark as voted");
-        return ins.candidates(candidateId);
+        return ins.candidates(candidateId-1);
       }).then(function(candidate){
         var voteCount = candidate[2];
         assert.equal(voteCount,1,'increamet the condidate vote count');
@@ -62,9 +62,9 @@ contract('Election',function(accounts){
   it('Throwgh an exeption for Double Voting',function(){
       return Election.deployed().then(function(instacnce){
         ins = instacnce;
-        candidateId = 1;
+        candidateId = 2;
         ins.vote(candidateId,{from : accounts[1]});
-        return ins.candidates(candidateId);
+        return ins.candidates(candidateId - 1);
       }).then(function(candidate1){
         var voteCount = candidate1[2];
         assert.equal(voteCount,1,'Accept first vote');

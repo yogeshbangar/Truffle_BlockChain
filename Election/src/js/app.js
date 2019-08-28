@@ -53,6 +53,17 @@ App = {
   },
 
   render: function() {
+
+
+
+    web3.eth.getCoinbase(function(err, account) {
+      console.log(err, account);
+      if (err === null) {
+        App.account = account;
+        $("#accountAddress").html("Your Account: " + account);
+      }
+    });
+
     var electionInstance;
     var loader = $("#loader");
     var content = $("#content");
@@ -61,12 +72,6 @@ App = {
     content.hide();
     console.log("render: function");
     // Load account data
-    web3.eth.getCoinbase(function(err, account) {
-      if (err === null) {
-        App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
-      }
-    });
 
     // Load contract data
     App.contracts.Election.deployed().then(function(instance) {
@@ -80,25 +85,39 @@ App = {
 
       var candidatesSelect = $('#candidatesSelect');
       candidatesSelect.empty();
-
+      var myArray = Array();
       for (var i = 0; i < candidatesCount; i++) {
+        console.log("render: candidatesCount <><> "+candidatesCount);
         electionInstance.candidates(i).then(function(candidate) {
-          console.log("render: candidatesCount ...."+candidate);
+
           var id = candidate[0];
           var name = candidate[1];
           var voteCount = candidate[2];
+          myArray[id-1] = candidate;
+          console.log(myArray.length+" "+id+" "+myArray);
+          candidatesResults.empty();
+          candidatesSelect.empty();
+          for (var i = 0; i < myArray.length; i++) {
+            var id = myArray[i][0];
+            var name = myArray[i][1];
+            var voteCount = myArray[i][2];
+            // Render candidate Result
 
-          // Render candidate Result
-          var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-          candidatesResults.append(candidateTemplate);
+           var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
+           candidatesResults.append(candidateTemplate);
 
-          // Render candidate ballot option
-          var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-          candidatesSelect.append(candidateOption);
+           // Render candidate ballot option
+           var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
+           candidatesSelect.append(candidateOption);
+
+          }
+
         });
       }
+      console.log("electionInstance.voters(App.account) "+App.account);
       return electionInstance.voters(App.account);
     }).then(function(hasVoted) {
+      console.log("hasVoted = "+hasVoted);
       // Do not allow a user to vote
       if(hasVoted) {
         $('form').hide();
@@ -114,6 +133,7 @@ App = {
   castVote: function() {
     var candidateId = $('#candidatesSelect').val();
     App.contracts.Election.deployed().then(function(instance) {
+      console.log("instance.vote = "+candidateId);
       return instance.vote(candidateId, { from: App.account });
     }).then(function(result) {
       // Wait for votes to update
@@ -121,6 +141,15 @@ App = {
       $("#loader").show();
     }).catch(function(err) {
       console.error(err);
+    });
+  },
+  castVoteDummy: function() {
+    var candidateId = $('#candidatesSelect').val();
+    App.contracts.Election.deployed().then(function(instance) {
+      console.log("castVoteDummy.vote = ");
+      return instance.great();
+    }).then(function(){
+      console.log("can");
     });
   }
 };
